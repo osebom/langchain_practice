@@ -6,6 +6,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import SimpleSequentialChain
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv('.env')
 
@@ -25,19 +26,6 @@ Then write a Python script to sum this data by 'Category' and print the results.
 {categorized_transactions}
 """
 
-# # OpenAI (GPT-3.5) LLM
-# llm_open_ai = OpenAI(max_tokens=1024,openai_api_key=os.environ.get("OPENAI_API_KEY"))
-# llm = llm_open_ai
-
-# # AWS Bedrock LLM
-# BEDROCK_CLAUDE_MODEL = "anthropic.claude-v2"
-# BEDROCK_LLAMA_MODEL = "meta.llama2-70b-chat-v1"
-# llm_bedrock = Bedrock(
-#     credentials_profile_name="default",
-#     model_id=BEDROCK_CLAUDE_MODEL,
-#     model_kwargs={"max_tokens_to_sample": 1024},
-# )
-
 # Google Gemini LLM
 llm_gemini = GoogleGenerativeAI(
     model="gemini-pro",
@@ -48,8 +36,11 @@ llm_gemini = GoogleGenerativeAI(
 llm = llm_gemini  # Or llm_bedrock or llm_open_ai.
 
 # Create the individual prompt templates.
-categorization_template = PromptTemplate.from_template(PROMPT_TEMPLATE_TEXT)
-coding_template = PromptTemplate.from_template(CODING_TEMPLATE_TEXT)
+# categorization_template = PromptTemplate.from_template(input_variables=["statement"],template=PROMPT_TEMPLATE_TEXT)
+# coding_template = PromptTemplate.from_template(input_variables=["categorized_transactions"],template=CODING_TEMPLATE_TEXT)
+
+categorization_template = PromptTemplate(input_variables=["statement"],template=PROMPT_TEMPLATE_TEXT)
+coding_template = PromptTemplate(input_variables=["categorized_transactions"],template=CODING_TEMPLATE_TEXT)
 
 # Create the chains.
 categorization_chain = LLMChain(llm=llm, prompt=categorization_template)
